@@ -33,6 +33,7 @@ class _CameraScreenState extends State<CameraScreen> {
   bool using = false;
 
   scanBarCode(CameraImage image) async {
+    Future.delayed(Duration(milliseconds: 100));
     if (using) return;
     using = true;
 

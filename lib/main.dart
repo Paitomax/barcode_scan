@@ -44,8 +44,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => CameraScreen(camera: _cameras[0],) ));
                 if (result?.toString().isNotEmpty){
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text(result.toString()),
+                  showDialog(context: this.context,child: AlertDialog(
+                    title: Text("Conteudo do codigo de barras:"),
+                      content: Text(result),
                   ));
                 }
               },

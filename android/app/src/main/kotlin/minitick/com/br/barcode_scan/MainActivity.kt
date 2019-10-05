@@ -1,4 +1,4 @@
-package minitick.com.br.barcode_scan
+package br.com.minitick.barcode_scan
 
 import android.os.Bundle
 

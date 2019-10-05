@@ -20,7 +20,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void initState() {
     super.initState();
 
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
+    _controller = CameraController(widget.camera, ResolutionPreset.ultraHigh);
     _controller.initialize().then((_) {
       if (!mounted) {
         return;
@@ -56,7 +56,7 @@ class _CameraScreenState extends State<CameraScreen> {
     List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
     if (barcodes.length > 0) {
       using = false;
-      _controller.stopImageStream();
+      if (_controller.value.isStreamingImages) _controller.stopImageStream();
       Navigator.pop(this.context, barcodes.first.rawValue);
     }
     using = false;

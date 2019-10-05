@@ -3,7 +3,6 @@ import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
 class CameraScreen extends StatefulWidget {
-
   CameraDescription camera;
 
   CameraScreen({Key key, @required this.camera}) : super(key: key);
@@ -26,42 +25,40 @@ class _CameraScreenState extends State<CameraScreen> {
       if (!mounted) {
         return;
       }
-      //FirebaseApp.initializeApp(context);
-      _controller.startImageStream(onImageStream);
-
+      _controller.startImageStream(scanBarCode);
       setState(() {});
     });
-
-
   }
 
-  onImageStream(CameraImage cameraImage){
-    scanBarCode(cameraImage);
-  }
+  bool using = false;
 
-
-  scanBarCode(CameraImage image) async{
+  scanBarCode(CameraImage image) async {
+    if (using) return;
+    using = true;
 
     final FirebaseVisionImageMetadata metadata = FirebaseVisionImageMetadata(
         rawFormat: image.format.raw,
-        size: Size(image.width.toDouble(),image.height.toDouble()),
-        planeData: image.planes.map((currentPlane) => FirebaseVisionImagePlaneMetadata(
-            bytesPerRow: currentPlane.bytesPerRow,
-            height: currentPlane.height,
-            width: currentPlane.width
-        )).toList(),
-        rotation: ImageRotation.rotation90
-    );
+        size: Size(image.width.toDouble(), image.height.toDouble()),
+        planeData: image.planes
+            .map((currentPlane) => FirebaseVisionImagePlaneMetadata(
+                bytesPerRow: currentPlane.bytesPerRow,
+                height: currentPlane.height,
+                width: currentPlane.width))
+            .toList(),
+        rotation: ImageRotation.rotation90);
 
-    var visionImage = FirebaseVisionImage.fromBytes(image.planes.first.bytes, metadata);
+    var visionImage =
+        FirebaseVisionImage.fromBytes(image.planes.first.bytes, metadata);
     var options = BarcodeDetectorOptions(barcodeFormats: BarcodeFormat.all);
 
     var barcodeDetector = FirebaseVision.instance.barcodeDetector(options);
     List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
-    if(barcodes.length > 0){
+    if (barcodes.length > 0) {
+      using = false;
       _controller.stopImageStream();
-      Navigator.pop(this.context,barcodes.first.rawValue);
+      Navigator.pop(this.context, barcodes.first.rawValue);
     }
+    using = false;
   }
 
   @override
@@ -72,7 +69,6 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     if (!_controller.value.isInitialized) {
       return Container();
     }
